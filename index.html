@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>NET — Progress Tracker</title>
+<style>
+  :root{
+    --bg:#ffffff;
+    --ink:#111111;
+    --ink-soft:#6b7280;
+    --line:#e7e7e7;
+    --card:#fafafa;
+    --accent:#2f6fed;
+    --good:#111111;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    padding-bottom:84px;
+    min-height:100vh;
+  }
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:16px 20px;
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    background:#ffffffee;
+    backdrop-filter:blur(8px);
+    z-index:5;
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .logo-mark{
+    font-weight:800;
+    font-size:20px;
+    letter-spacing:2px;
+    color:var(--ink);
+    background:#fff;
+    border:1.5px solid var(--ink);
+    padding:3px 10px;
+    border-radius:8px;
+    line-height:1;
+  }
+  .logo-sub{
+    font-size:11px;
+    color:var(--ink-soft);
+    letter-spacing:0.3px;
+  }
+  .header-right{
+    font-size:11.5px;
+    color:var(--ink-soft);
+    text-align:right;
+    background:var(--card);
+    border:1px solid var(--line);
+    padding:5px 10px;
+    border-radius:20px;
+  }
+
+  main{max-width:640px;margin:0 auto;padding:16px 16px 8px;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:16px;
+    margin-bottom:14px;
+  }
+  .card h3{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:0.6px;color:var(--ink-soft);font-weight:600;}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+  .stat{text-align:center;}
+  .stat .num{font-size:22px;font-weight:700;}
+  .stat .label{font-size:11px;color:var(--ink-soft);margin-top:2px;}
+
+  .progress-bar{height:8px;background:#ececec;border-radius:6px;overflow:hidden;margin-top:8px;}
+  .progress-fill{height:100%;background:var(--accent);border-radius:6px;transition:width .3s ease;}
+
+  .task{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 4px;
+    border-bottom:1px solid var(--line);
+  }
+  .task:last-child{border-bottom:none;}
+  .checkbox{
+    width:22px;height:22px;flex:0 0 22px;
+    border:2px solid var(--ink);
+    border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:background .15s ease;
+  }
+  .checkbox.checked{background:var(--ink);}
+  .checkbox svg{display:none;width:13px;height:13px;stroke:#fff;stroke-width:3;fill:none;}
+  .checkbox.checked svg{display:block;}
+  .task-text{flex:1;}
+  .task-subject{font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:0.5px;}
+  .task-topic{font-size:14px;margin-top:1px;}
+  .task-topic.done{color:var(--ink-soft);text-decoration:line-through;}
+
+  input[type="date"],input[type="number"],input[type="text"],textarea{
+    font-family:inherit;
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:8px 10px;
+    font-size:14px;
+    color:var(--ink);
+    background:#fff;
+    width:100%;
+  }
+  textarea{min-height:140px;resize:vertical;}
+  label.field-label{font-size:12px;color:var(--ink-soft);display:block;margin-bottom:4px;}
+
+  .week-header{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px 4px;cursor:pointer;
+  }
+  .week-title{font-size:14px;font-weight:600;}
+  .week-meta{font-size:12px;color:var(--ink-soft);}
+  .chevron{transition:transform .2s ease;stroke:var(--ink-soft);stroke-width:2;fill:none;width:14px;height:14px;}
+  .week-block.open .chevron{transform:rotate(90deg);}
+  .week-days{display:none;padding:0 4px 8px;}
+  .week-block.open .week-days{display:block;}
+  .day-group{padding:10px 0;border-top:1px solid var(--line);}
+  .day-name{font-size:12px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;letter-spacing:0.5px;}
+
+  .week-progress-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:#dcdcdc;flex:0 0 8px;
+  }
+  .week-progress-dot.full{background:var(--ink);}
+  .week-progress-dot.partial{background:var(--accent);}
+
+  .attempt-card{margin-bottom:12px;}
+  .attempt-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+  .attempt-badge{
+    font-size:11px;padding:3px 8px;border-radius:20px;border:1px solid var(--line);color:var(--ink-soft);
+  }
+  .attempt-badge.done{background:var(--ink);color:#fff;border-color:var(--ink);}
+  .attempt-fields{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:8px;}
+  .field-sm label{font-size:11px;color:var(--ink-soft);display:block;margin-bottom:3px;}
+  .attempt-total{font-size:13px;margin-top:6px;color:var(--ink-soft);}
+  .attempt-total b{color:var(--ink);}
+
+  .subj-row{margin-bottom:12px;}
+  .subj-row:last-child{margin-bottom:0;}
+  .subj-top{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;}
+  .subj-top span:first-child{text-transform:capitalize;font-weight:600;}
+  .subj-top span:last-child{color:var(--ink-soft);}
+  .subj-bar{height:6px;background:#ececec;border-radius:6px;overflow:hidden;}
+  .subj-bar-fill{height:100%;border-radius:6px;background:var(--ink);}
+
+  nav.bottom{
+    position:fixed;bottom:0;left:0;right:0;
+    background:#ffffffee;
+    backdrop-filter:blur(8px);
+    border-top:1px solid var(--line);
+    display:flex;
+    justify-content:center;
+    padding:8px 10px calc(8px + env(safe-area-inset-bottom));
+    z-index:10;
+  }
+  nav.bottom .nav-inner{
+    display:flex;
+    max-width:420px;
+    width:100%;
+    gap:4px;
+  }
+  nav.bottom button{
+    flex:1;
+    background:none;border:none;
+    padding:7px 4px;
+    border-radius:12px;
+    display:flex;flex-direction:column;align-items:center;gap:3px;
+    color:var(--ink-soft);
+    font-family:inherit;
+    font-size:10.5px;
+    letter-spacing:0.2px;
+    cursor:pointer;
+    transition:background .15s ease, color .15s ease;
+  }
+  nav.bottom button.active{color:var(--ink);background:var(--card);}
+  nav.bottom svg{width:19px;height:19px;stroke:currentColor;stroke-width:1.7;fill:none;}
+
+  .empty-note{font-size:13px;color:var(--ink-soft);text-align:center;padding:20px 0;}
+  .save-hint{font-size:11px;color:var(--ink-soft);margin-top:6px;text-align:right;}
+  .btn{
+    background:var(--ink);color:#fff;border:none;border-radius:8px;
+    padding:9px 14px;font-size:13px;font-family:inherit;cursor:pointer;
+  }
+  .btn.secondary{background:none;color:var(--ink);border:1px solid var(--line);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-mark">NET</span>
+    <span class="logo-sub">Progress Tracker</span>
+  </div>
+  <div class="header-right" id="headerCountdown">—</div>
+</header>
+
+<main>
+
+  <!-- TODAY -->
+  <section class="view active" id="view-today">
+    <div class="card">
+      <h3>Overview</h3>
+      <div class="stat-grid">
+        <div class="stat"><div class="num" id="statPercent">0%</div><div class="label">Complete</div></div>
+        <div class="stat"><div class="num" id="statStreak">0</div><div class="label">Day streak</div></div>
+        <div class="stat"><div class="num" id="statDays">—</div><div class="label">Days left</div></div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="overallFill" style="width:0%"></div></div>
+    </div>
+
+    <div class="card">
+      <h3>Subject breakdown</h3>
+      <div id="subjectBreakdown"></div>
+    </div>
+
+    <div class="card">
+      <h3>Today — <span id="todayLabel">Week 1, Mon</span></h3>
+      <div id="todayTasks"></div>
+    </div>
+
+    <div class="card">
+      <h3>Schedule setup</h3>
+      <label class="field-label">Start date (Day 1 of Week 1)</label>
+      <input type="date" id="startDateInput">
+      <div style="height:10px"></div>
+      <label class="field-label">Target NET attempt date</label>
+      <input type="date" id="examDateInput">
+    </div>
+  </section>
+
+  <!-- WEEKS -->
+  <section class="view" id="view-weeks">
+    <div class="card" style="padding:12px 16px;">
+      <div class="row">
+        <span style="font-size:13px;color:var(--ink-soft);">20 weeks total</span>
+        <span style="font-size:13px;color:var(--ink-soft);" id="weeksOverallPct">0% done</span>
+      </div>
+    </div>
+    <div id="weeksList"></div>
+  </section>
+
+  <!-- ATTEMPTS -->
+  <section class="view" id="view-attempts">
+    <div class="card">
+      <h3>Attempt tracker (4 max)</h3>
+      <p style="font-size:13px;color:var(--ink-soft);margin:0;">Target score: 170 / 200</p>
+    </div>
+    <div id="attemptsList"></div>
+  </section>
+
+  <!-- NOTES -->
+  <section class="view" id="view-notes">
+    <div class="card">
+      <h3>Weak topics &amp; notes</h3>
+      <textarea id="notesArea" placeholder="Jot down formulas, mistakes to avoid, topics to revisit before mocks..."></textarea>
+      <div class="save-hint" id="notesSaveHint">Saved automatically</div>
+    </div>
+  </section>
+
+</main>
+
+<nav class="bottom">
+  <div class="nav-inner">
+    <button class="nav-btn active" data-view="today">
+      <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+      Today
+    </button>
+    <button class="nav-btn" data-view="weeks">
+      <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M3 9h18"/><path d="M8 3v3M16 3v3"/></svg>
+      Weeks
+    </button>
+    <button class="nav-btn" data-view="attempts">
+      <svg viewBox="0 0 24 24"><path d="M4 19V10M12 19V4M20 19v-7"/></svg>
+      Attempts
+    </button>
+    <button class="nav-btn" data-view="notes">
+      <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h6"/></svg>
+      Notes
+    </button>
+  </div>
+</nav>
+
+<script>
+/* ---------------- DATA ---------------- */
+const WEEKS = [
+{w:1, days:[
+ ["Mon","Sets – operations, Venn diagrams","Kinematics – distance, speed, velocity","Tenses – present forms"],
+ ["Tue","Functions – types, domain/range","Kinematics – acceleration, equations of motion","Tenses – past forms"],
+ ["Wed","Composition & inverse functions","Kinematics – graphs (v-t, s-t)","Tenses – future forms"],
+ ["Thu","Quadratic equations – solving methods","Newton's 1st & 2nd law","Parts of speech – nouns, pronouns, verbs"],
+ ["Fri","Quadratic equations – nature of roots","Newton's 3rd law + practice","Parts of speech – adjectives, adverbs"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:2, days:[
+ ["Mon","AP – nth term, sum","Work & energy basics","Sentence correction – subject-verb agreement"],
+ ["Tue","GP – nth term, sum, infinite GP","Power, work-energy theorem","Sentence correction – prepositions"],
+ ["Wed","Binomial theorem – expansion","Circular motion – basics","Sentence correction – articles"],
+ ["Thu","Binomial – general term","Circular motion – centripetal force","Sentence correction – mixed practice"],
+ ["Fri","Mixed practice (sequences+binomial)","Mixed numericals","Mixed grammar practice"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:3, days:[
+ ["Mon","Basic trig ratios & identities","Waves – types, terms","Active/Passive voice – basics"],
+ ["Tue","Sum-difference formulas","Waves – wave equation","Active/Passive voice – tenses"],
+ ["Wed","Double/half angle formulas","Sound – speed, properties","Narration – direct to indirect"],
+ ["Thu","Trig equations – solving","Sound – Doppler effect","Narration – questions/commands"],
+ ["Fri","Trig equations – practice","Mixed numericals","Mixed practice"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:4, days:[
+ ["Mon","Trig graphs (sin, cos, tan)","Electrostatics – charge, Coulomb's law","Vocabulary – synonyms"],
+ ["Tue","Inverse trig functions","Electrostatics – electric field","Vocabulary – antonyms"],
+ ["Wed","Full revision – Algebra","Electrostatics – potential","Vocabulary – practice set"],
+ ["Thu","Full revision – Trig","Mixed numericals","Mixed vocab practice"],
+ ["Fri","Mixed MCQ test (Month 1)","Mixed MCQ test","Mixed MCQ test"],
+ ["Sat","Redo wrong answers","Redo wrong answers","Redo wrong answers"],
+ ["Sun","Rest / light revision","Rest / light revision","Rest / light revision"]]},
+{w:5, days:[
+ ["Mon","Matrix types & operations","Current electricity – Ohm's law","Reading comprehension – short passages"],
+ ["Tue","Determinants","Current electricity – resistance, circuits","Reading comprehension – inference questions"],
+ ["Wed","Inverse of a matrix","Series & parallel circuits","Comprehension – vocabulary in context"],
+ ["Thu","Solving linear eqs via matrices","Mixed numericals","Mixed comprehension practice"],
+ ["Fri","Mixed matrix practice","Mixed numericals","Mixed practice"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:6, days:[
+ ["Mon","Vectors – addition/subtraction","Revise mechanics (Wk1-2)","Analogies – basics"],
+ ["Tue","Dot product","Revise waves/sound (Wk3)","Idioms – common set 1"],
+ ["Wed","Cross product","Revise electrostatics (Wk4)","Idioms – common set 2"],
+ ["Thu","Applications – work, area","Revise current electricity (Wk5)","Mixed analogies/idioms"],
+ ["Fri","Mixed vector practice","Mixed physics MCQs","Mixed practice"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:7, days:[
+ ["Mon","Complex numbers – basics","Full physics MCQ set 1","Full grammar MCQ set 1"],
+ ["Tue","Polar form, modulus-argument","Full physics MCQ set 2","Full grammar MCQ set 2"],
+ ["Wed","De Moivre's theorem","Full physics MCQ set 3","Full grammar MCQ set 3"],
+ ["Thu","Mixed complex practice","Weak topic redo","Weak topic redo"],
+ ["Fri","Mixed test (Wk5-7 math)","Mixed physics test","Mixed English test"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:8, days:[
+ ["Mon","Revise matrices","Revise all Month 2 physics","Revise all Month 2 English"],
+ ["Tue","Revise vectors","Weak topic redo","Weak topic redo"],
+ ["Wed","Revise complex numbers","Weak topic redo","Weak topic redo"],
+ ["Thu","Full mock (Month 1+2 math)","Full mock physics","Full mock English"],
+ ["Fri","Redo wrong answers","Redo wrong answers","Redo wrong answers"],
+ ["Sat","Weak topic redo","Weak topic redo","Weak topic redo"],
+ ["Sun","Rest","Rest","Rest"]]},
+{w:9, days:[
+ ["Mon","Limits – basic","Magnetism – basics","Comprehension – long passages"],
+ ["Tue","Limits – trig/algebraic","Magnetism – force on current","Comprehension – tone/purpose questions"],
+ ["Wed","Continuity","Electromagnetic induction","Précis writing – intro"],
+ ["Thu","Mixed limits practice","Mixed numericals","Précis practice"],
+ ["Fri","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:10, days:[
+ ["Mon","Differentiation rules","Modern physics – photoelectric effect","Grammar – conditional sentences"],
+ ["Tue","Chain, product, quotient rule","Modern physics – atomic structure basics","Grammar – modals"],
+ ["Wed","Higher order derivatives","Modern physics – radioactivity basics","Grammar – mixed practice"],
+ ["Thu","Applications – max/min","Mixed numericals","Mixed grammar test"],
+ ["Fri","Applications – rate of change","Mixed numericals","Mixed practice"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:11, days:[
+ ["Mon","Basic integration rules","Full physics revision – mechanics+waves","Full English revision – grammar"],
+ ["Tue","Integration by substitution","Full physics revision – electricity+magnetism","Full English revision – vocab"],
+ ["Wed","Definite integrals","Full physics revision – modern physics","Full English revision – comprehension"],
+ ["Thu","Area under curve","Mixed physics MCQ test","Mixed English MCQ test"],
+ ["Fri","Mixed integration practice","Weak topic redo","Weak topic redo"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:12, days:[
+ ["Mon","Circle equations","Full mock physics","Full mock English"],
+ ["Tue","Parabola","Redo wrong answers","Redo wrong answers"],
+ ["Wed","Ellipse","Weak topic redo","Weak topic redo"],
+ ["Thu","Full mock (Month 3 math)","Weak topic redo","Weak topic redo"],
+ ["Fri","Redo wrong answers","MCQ practice","MCQ practice"],
+ ["Sat","Weak topic redo","MCQ practice","MCQ practice"],
+ ["Sun","Rest","Rest","Rest"]]},
+{w:13, days:[
+ ["Mon","Partial fractions – proper/improper fractions","Measurements – units, dimensions, errors","Translation – Urdu to English basics"],
+ ["Tue","Partial fractions – repeated/irreducible factors","Vectors & equilibrium – resolution of vectors","Translation – English to Urdu practice"],
+ ["Wed","Number system – basics, sets of numbers","Vectors & equilibrium – equilibrium of forces","Punctuation rules"],
+ ["Thu","Mixed partial fractions practice","Mixed numericals (measurements+vectors)","Mixed translation & punctuation practice"],
+ ["Fri","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:14, days:[
+ ["Mon","Permutation – basics, factorial notation","Fluid dynamics – basics, viscosity","Precis writing – intro"],
+ ["Tue","Combination – basics","Fluid dynamics – Bernoulli's equation","Precis writing – practice"],
+ ["Wed","Permutation & combination – mixed problems","Fluid dynamics – applications","Essay writing – intro & structure"],
+ ["Thu","Probability – basic concepts","Mixed numericals","Essay writing – practice"],
+ ["Fri","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:15, days:[
+ ["Mon","Probability – addition/multiplication theorem","Oscillations – SHM basics","Letter writing – formal"],
+ ["Tue","Probability – practice problems","Oscillations – pendulum, energy in SHM","Letter writing – informal/application"],
+ ["Wed","Mathematical induction – principle & proofs","Thermodynamics – basics, laws","Idioms – set 3"],
+ ["Thu","Mathematical induction – practice","Thermodynamics – heat engines","Mixed vocabulary practice"],
+ ["Fri","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:16, days:[
+ ["Mon","Solution of triangles – law of sines/cosines","Electromagnetism – basics, magnetic flux","Comprehension – practice set"],
+ ["Tue","Solution of triangles – practice problems","Electromagnetism – motional EMF","Grammar – mixed revision"],
+ ["Wed","Linear inequalities – graphing","AC circuits – basics","Analogies – advanced set"],
+ ["Thu","Linear programming – graphical method","Electronics – basics (diodes, transistors)","Mixed practice"],
+ ["Fri","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sat","MCQ practice","MCQ practice","MCQ practice"],
+ ["Sun","Revision","Revision","Revision"]]},
+{w:17, days:[
+ ["Mon","Full revision – number system, partial fractions, P&C","Atomic spectra – basics","Full grammar revision"],
+ ["Tue","Full revision – probability, induction, solution of triangles","Nuclear physics – basics, radioactivity","Full vocabulary revision"],
+ ["Wed","Full revision – linear inequalities/programming","Full physics revision – measurements to nuclear physics","Full comprehension revision"],
+ ["Thu","Full mock (all 3 subjects)","Full mock","Full mock"],
+ ["Fri","Review mock mistakes","Review mock mistakes","Review mock mistakes"],
+ ["Sat","Redo wrong answers","Redo wrong answers","Redo wrong answers"],
+ ["Sun","Rest","Rest","Rest"]]},
+{w:18, days:[
+ ["Mon","Full-length mock","Full-length mock","Full-length mock"],
+ ["Tue","Review + redo mistakes","Review + redo mistakes","Review + redo mistakes"],
+ ["Wed","Weak topic redo","Weak topic redo","Weak topic redo"],
+ ["Thu","Full-length mock","Full-length mock","Full-length mock"],
+ ["Fri","Review + redo mistakes","Review + redo mistakes","Review + redo mistakes"],
+ ["Sat","Formula sheet review","Formula sheet review","Formula sheet review"],
+ ["Sun","Rest","Rest","Rest"]]},
+{w:19, days:[
+ ["Mon","Full-length mock","Full-length mock","Full-length mock"],
+ ["Tue","Review + redo mistakes","Review + redo mistakes","Review + redo mistakes"],
+ ["Wed","Weak topic redo","Weak topic redo","Weak topic redo"],
+ ["Thu","Full-length mock","Full-length mock","Full-length mock"],
+ ["Fri","Review + redo mistakes","Review + redo mistakes","Review + redo mistakes"],
+ ["Sat","Formula sheet review","Formula sheet review","Formula sheet review"],
+ ["Sun","Rest","Rest","Rest"]]},
+{w:20, days:[
+ ["Mon","Full-length mock (final)","Full-length mock (final)","Full-length mock (final)"],
+ ["Tue","Review mistakes","Review mistakes","Review mistakes"],
+ ["Wed","Formula sheet review","Formula sheet review","Formula sheet review"],
+ ["Thu","Light revision","Light revision","Light revision"],
+ ["Fri","Formula sheet review","Formula sheet review","Formula sheet review"],
+ ["Sat","Rest","Rest","Rest"],
+ ["Sun","Rest – exam ready","Rest – exam ready","Rest – exam ready"]]}
+];
+
+/* ---------------- STATE ---------------- */
+let state = {
+  checklist: {},         // key "w-d-s" -> true
+  startDate: null,
+  examDate: null,
+  attempts: [
+    {n:1, date:"", math:"", physics:"", english:"", total:"", done:false},
+    {n:2, date:"", math:"", physics:"", english:"", total:"", done:false},
+    {n:3, date:"", math:"", physics:"", english:"", total:"", done:false},
+    {n:4, date:"", math:"", physics:"", english:"", total:"", done:false}
+  ],
+  notes: ""
+};
+
+const STORAGE_KEY = "net_tracker_state_v1";
+
+/* Storage wrapper: uses the Claude artifact storage API when present,
+   falls back to localStorage when the file is opened directly in a browser. */
+async function storageGet(key){
+  if(typeof window.storage !== "undefined" && window.storage){
+    try{ return await window.storage.get(key, false); }
+    catch(e){ return null; }
+  }
+  try{
+    const v = localStorage.getItem(key);
+    return v ? {value:v} : null;
+  }catch(e){ return null; }
+}
+async function storageSet(key, value){
+  if(typeof window.storage !== "undefined" && window.storage){
+    try{ await window.storage.set(key, value, false); return; }
+    catch(e){ /* fall through to localStorage */ }
+  }
+  try{ localStorage.setItem(key, value); }catch(e){ /* ignore */ }
+}
+
+async function loadState(){
+  try{
+    const res = await storageGet(STORAGE_KEY);
+    if(res && res.value){
+      const parsed = JSON.parse(res.value);
+      state = Object.assign(state, parsed);
+    }
+  }catch(e){ /* no saved state yet */ }
+  if(!state.startDate){
+    state.startDate = new Date().toISOString().slice(0,10);
+  }
+  render();
+}
+
+async function saveState(){
+  try{
+    await storageSet(STORAGE_KEY, JSON.stringify(state));
+  }catch(e){ /* silently ignore, UI already updated */ }
+}
+
+/* ---------------- HELPERS ---------------- */
+function keyFor(w,d,s){ return w+"-"+d+"-"+s; }
+function cleanTopic(t){ return t.replace(/\s[–—]\s/g, ": "); }
+function totalBoxes(){ return WEEKS.length * 7 * 3; }
+function checkedCount(){
+  return Object.values(state.checklist).filter(Boolean).length;
+}
+function dayNumberSinceStart(){
+  const start = new Date(state.startDate+"T00:00:00");
+  const now = new Date();
+  now.setHours(0,0,0,0);
+  const diff = Math.floor((now-start)/(1000*60*60*24));
+  return diff;
+}
+function currentWeekDay(){
+  let n = dayNumberSinceStart();
+  if(n<0) n=0;
+  const weekIdx = Math.min(Math.floor(n/7), WEEKS.length-1);
+  const dayIdx = n%7;
+  return {weekIdx, dayIdx};
+}
+function daysToExam(){
+  if(!state.examDate) return null;
+  const exam = new Date(state.examDate+"T00:00:00");
+  const now = new Date(); now.setHours(0,0,0,0);
+  return Math.ceil((exam-now)/(1000*60*60*24));
+}
+function computeSubjectPercent(subject){
+  let total = WEEKS.length*7;
+  let done = 0;
+  WEEKS.forEach(w=>{
+    w.days.forEach((d,di)=>{
+      if(state.checklist[keyFor(w.w, di, subject)]) done++;
+    });
+  });
+  return Math.round((done/total)*100);
+}
+function computeStreak(){
+  // count consecutive days back from today (or last valid day) where all 3 boxes checked
+  let n = dayNumberSinceStart();
+  if(n<0) return 0;
+  let streak=0;
+  for(let i=n;i>=0;i--){
+    const weekIdx = Math.floor(i/7);
+    if(weekIdx>=WEEKS.length) continue;
+    const dayIdx = i%7;
+    const wObj = WEEKS[weekIdx];
+    const allDone = ["math","physics","english"].every(s=>state.checklist[keyFor(wObj.w,dayIdx,s)]);
+    if(allDone) streak++;
+    else break;
+  }
+  return streak;
+}
+
+/* ---------------- RENDER ---------------- */
+function render(){
+  document.getElementById("startDateInput").value = state.startDate || "";
+  document.getElementById("examDateInput").value = state.examDate || "";
+  document.getElementById("notesArea").value = state.notes || "";
+
+  const pct = Math.round((checkedCount()/totalBoxes())*100);
+  document.getElementById("statPercent").textContent = pct+"%";
+  document.getElementById("overallFill").style.width = pct+"%";
+  document.getElementById("statStreak").textContent = computeStreak();
+  document.getElementById("weeksOverallPct").textContent = pct+"% done";
+
+  const dLeft = daysToExam();
+  document.getElementById("statDays").textContent = dLeft===null ? "—" : dLeft;
+  document.getElementById("headerCountdown").textContent = dLeft===null ? "Set exam date" : dLeft+" days left";
+
+  renderSubjectBreakdown();
+  renderToday();
+  renderWeeks();
+  renderAttempts();
+}
+
+function renderSubjectBreakdown(){
+  const el = document.getElementById("subjectBreakdown");
+  const subjects = ["math","physics","english"];
+  el.innerHTML = subjects.map(s=>{
+    const pct = computeSubjectPercent(s);
+    return `
+      <div class="subj-row">
+        <div class="subj-top"><span>${s}</span><span>${pct}%</span></div>
+        <div class="subj-bar"><div class="subj-bar-fill" style="width:${pct}%"></div></div>
+      </div>`;
+  }).join("");
+}
+
+function renderToday(){
+  const {weekIdx, dayIdx} = currentWeekDay();
+  const wObj = WEEKS[weekIdx];
+  const day = wObj.days[dayIdx];
+  document.getElementById("todayLabel").textContent = `Week ${wObj.w}, ${day[0]}`;
+
+  const subjects = [["math",1],["physics",2],["english",3]];
+  const container = document.getElementById("todayTasks");
+  container.innerHTML = "";
+  subjects.forEach(([s,idx])=>{
+    const topic = cleanTopic(day[idx]);
+    const k = keyFor(wObj.w, dayIdx, s);
+    const checked = !!state.checklist[k];
+    const el = document.createElement("div");
+    el.className="task";
+    el.innerHTML = `
+      <div class="checkbox ${checked?'checked':''}" data-key="${k}">
+        <svg viewBox="0 0 24 24"><polyline points="4 12 9 18 20 6"/></svg>
+      </div>
+      <div class="task-text">
+        <div class="task-subject">${s}</div>
+        <div class="task-topic ${checked?'done':''}">${topic}</div>
+      </div>`;
+    container.appendChild(el);
+  });
+}
+
+function renderWeeks(){
+  const list = document.getElementById("weeksList");
+  list.innerHTML = "";
+  WEEKS.forEach(wObj=>{
+    const block = document.createElement("div");
+    block.className="card week-block";
+    block.dataset.week = wObj.w;
+
+    let doneCount=0;
+    wObj.days.forEach((d,di)=>{
+      ["math","physics","english"].forEach(s=>{
+        if(state.checklist[keyFor(wObj.w,di,s)]) doneCount++;
+      });
+    });
+    const dotClass = doneCount===21 ? "full" : (doneCount>0 ? "partial" : "");
+
+    const header = document.createElement("div");
+    header.className="week-header";
+    header.innerHTML = `
+      <div class="row" style="gap:8px;">
+        <span class="week-progress-dot ${dotClass}"></span>
+        <span class="week-title">Week ${wObj.w}</span>
+      </div>
+      <div class="row" style="gap:8px;">
+        <span class="week-meta">${doneCount}/21</span>
+        <svg class="chevron" viewBox="0 0 24 24"><polyline points="9 6 15 12 9 18"/></svg>
+      </div>`;
+    header.addEventListener("click", ()=>{
+      block.classList.toggle("open");
+    });
+    block.appendChild(header);
+
+    const daysWrap = document.createElement("div");
+    daysWrap.className="week-days";
+    wObj.days.forEach((d,di)=>{
+      const dayName = d[0];
+      const group = document.createElement("div");
+      group.className="day-group";
+      let inner = `<div class="day-name">${dayName}</div>`;
+      const subjects=[["math",1],["physics",2],["english",3]];
+      subjects.forEach(([s,idx])=>{
+        const topic = cleanTopic(d[idx]);
+        const k = keyFor(wObj.w, di, s);
+        const checked = !!state.checklist[k];
+        inner += `
+        <div class="task">
+          <div class="checkbox ${checked?'checked':''}" data-key="${k}">
+            <svg viewBox="0 0 24 24"><polyline points="4 12 9 18 20 6"/></svg>
+          </div>
+          <div class="task-text">
+            <div class="task-subject">${s}</div>
+            <div class="task-topic ${checked?'done':''}">${topic}</div>
+          </div>
+        </div>`;
+      });
+      group.innerHTML = inner;
+      daysWrap.appendChild(group);
+    });
+    block.appendChild(daysWrap);
+    list.appendChild(block);
+  });
+}
+
+function renderAttempts(){
+  const list = document.getElementById("attemptsList");
+  list.innerHTML = "";
+  state.attempts.forEach((a, i)=>{
+    const card = document.createElement("div");
+    card.className="card attempt-card";
+    const total = (Number(a.math||0)+Number(a.physics||0)+Number(a.english||0)) || a.total || "";
+    card.innerHTML = `
+      <div class="attempt-top">
+        <span class="week-title">Attempt ${a.n}</span>
+        <span class="attempt-badge ${a.done?'done':''}">${a.done?'Completed':'Upcoming'}</span>
+      </div>
+      <label class="field-label">Date</label>
+      <input type="date" data-idx="${i}" data-field="date" value="${a.date||''}">
+      <div style="height:8px"></div>
+      <div class="attempt-fields">
+        <div class="field-sm"><label>Math</label><input type="number" data-idx="${i}" data-field="math" value="${a.math||''}" placeholder="/100"></div>
+        <div class="field-sm"><label>Physics</label><input type="number" data-idx="${i}" data-field="physics" value="${a.physics||''}" placeholder="/60"></div>
+        <div class="field-sm"><label>English</label><input type="number" data-idx="${i}" data-field="english" value="${a.english||''}" placeholder="/40"></div>
+      </div>
+      <div class="attempt-total">Total: <b>${a.total || total || 0}</b> / 200 &nbsp;·&nbsp; Target: 170</div>
+    `;
+    list.appendChild(card);
+  });
+}
+
+/* ---------------- EVENTS ---------------- */
+document.addEventListener("click", (e)=>{
+  const cb = e.target.closest(".checkbox");
+  if(cb){
+    const k = cb.dataset.key;
+    state.checklist[k] = !state.checklist[k];
+    saveState();
+    render();
+    return;
+  }
+});
+
+document.querySelectorAll(".nav-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+    document.getElementById("view-"+btn.dataset.view).classList.add("active");
+  });
+});
+
+document.getElementById("startDateInput").addEventListener("change", (e)=>{
+  state.startDate = e.target.value;
+  saveState();
+  render();
+});
+document.getElementById("examDateInput").addEventListener("change", (e)=>{
+  state.examDate = e.target.value;
+  saveState();
+  render();
+});
+
+let notesTimer;
+document.getElementById("notesArea").addEventListener("input", (e)=>{
+  state.notes = e.target.value;
+  document.getElementById("notesSaveHint").textContent = "Saving…";
+  clearTimeout(notesTimer);
+  notesTimer = setTimeout(()=>{
+    saveState();
+    document.getElementById("notesSaveHint").textContent = "Saved automatically";
+  }, 500);
+});
+
+document.addEventListener("change", (e)=>{
+  if(e.target.matches('[data-field]')){
+    const idx = Number(e.target.dataset.idx);
+    const field = e.target.dataset.field;
+    state.attempts[idx][field] = e.target.value;
+    if(field!=='date'){
+      const a = state.attempts[idx];
+      const t = Number(a.math||0)+Number(a.physics||0)+Number(a.english||0);
+      if(t>0) a.total = t;
+    }
+    saveState();
+    renderAttempts();
+  }
+});
+
+/* ---------------- INIT ---------------- */
+loadState();
+</script>
+</body>
+</html>
