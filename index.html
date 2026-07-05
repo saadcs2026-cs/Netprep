@@ -537,6 +537,25 @@
       border: 1px solid var(--line); 
     }
 
+    /* Offline indicator */
+    .offline-banner {
+      display: none;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 6px 12px;
+      text-align: center;
+      font-size: 11px;
+      font-weight: 600;
+      border-bottom: 1px solid #f59e0b;
+      position: sticky;
+      top: 60px;
+      z-index: 4;
+    }
+    
+    .offline-banner.show {
+      display: block;
+    }
+
     /* Responsive fine-tuning */
     @media (max-width: 380px) {
       header { padding: 10px 12px; }
@@ -589,10 +608,18 @@
       .checkbox.checked svg { stroke: #1a1a1a; }
       .attempt-badge.done { background: #f5f5f5; color: #1a1a1a; border-color: #f5f5f5; }
       .progress-bar, .subj-bar { background: #2a2a2a; }
+      .offline-banner {
+        background: #2d2a00;
+        color: #fbbf24;
+        border-color: #78350f;
+      }
     }
   </style>
 </head>
 <body>
+
+<!-- Offline Banner -->
+<div class="offline-banner" id="offlineBanner">📡 You're offline — changes will still be saved locally</div>
 
 <header>
   <div class="logo">
@@ -661,7 +688,7 @@
     <div class="card">
       <h3>Weak topics &amp; notes</h3>
       <textarea id="notesArea" placeholder="Jot down formulas, mistakes to avoid, topics to revisit before mocks..."></textarea>
-      <div class="save-hint" id="notesSaveHint">Saved automatically</div>
+      <div class="save-hint" id="notesSaveHint">✓ Saved locally</div>
     </div>
   </section>
 </main>
@@ -868,29 +895,41 @@
 
   const STORAGE_KEY = "net_tracker_state_v1";
 
-  /* Storage wrapper: uses the Claude artifact storage API when present,
-     falls back to localStorage when the file is opened directly in a browser. */
-  async function storageGet(key){
-    if(typeof window.storage !== "undefined" && window.storage){
-      try{ return await window.storage.get(key, false); }
-      catch(e){ return null; }
-    }
+  /* ---------------- OFFLINE STORAGE (localStorage only) ---------------- */
+  function storageGet(key){
     try{
       const v = localStorage.getItem(key);
       return v ? {value:v} : null;
     }catch(e){ return null; }
   }
-  async function storageSet(key, value){
-    if(typeof window.storage !== "undefined" && window.storage){
-      try{ await window.storage.set(key, value, false); return; }
-      catch(e){ /* fall through to localStorage */ }
+  
+  function storageSet(key, value){
+    try{ 
+      localStorage.setItem(key, value); 
+      return true;
+    }catch(e){ 
+      console.warn('Failed to save:', e);
+      return false;
     }
-    try{ localStorage.setItem(key, value); }catch(e){ /* ignore */ }
   }
 
+  /* ---------------- NETWORK STATUS ---------------- */
+  function updateOfflineStatus() {
+    const banner = document.getElementById('offlineBanner');
+    if (!navigator.onLine) {
+      banner.classList.add('show');
+    } else {
+      banner.classList.remove('show');
+    }
+  }
+
+  window.addEventListener('online', updateOfflineStatus);
+  window.addEventListener('offline', updateOfflineStatus);
+
+  /* ---------------- LOAD & SAVE ---------------- */
   async function loadState(){
     try{
-      const res = await storageGet(STORAGE_KEY);
+      const res = storageGet(STORAGE_KEY);
       if(res && res.value){
         const parsed = JSON.parse(res.value);
         state = Object.assign(state, parsed);
@@ -900,12 +939,27 @@
       state.startDate = new Date().toISOString().slice(0,10);
     }
     render();
+    updateOfflineStatus();
   }
 
   async function saveState(){
     try{
-      await storageSet(STORAGE_KEY, JSON.stringify(state));
-    }catch(e){ /* silently ignore, UI already updated */ }
+      const saved = storageSet(STORAGE_KEY, JSON.stringify(state));
+      // Show instant feedback
+      const hint = document.getElementById('notesSaveHint');
+      if (hint) {
+        hint.textContent = saved ? '✓ Saved locally' : '⚠️ Save failed';
+        setTimeout(() => {
+          if (hint.textContent === '✓ Saved locally' || hint.textContent === '⚠️ Save failed') {
+            hint.textContent = '✓ Saved locally';
+          }
+        }, 1500);
+      }
+      return saved;
+    }catch(e){ 
+      console.warn('Save failed:', e);
+      return false;
+    }
   }
 
   /* ---------------- HELPERS ---------------- */
@@ -1151,8 +1205,8 @@
     clearTimeout(notesTimer);
     notesTimer = setTimeout(()=>{
       saveState();
-      document.getElementById("notesSaveHint").textContent = "Saved automatically";
-    }, 500);
+      document.getElementById("notesSaveHint").textContent = "✓ Saved locally";
+    }, 300);
   });
 
   document.addEventListener("change", (e)=>{
@@ -1169,6 +1223,14 @@
       renderAttempts();
     }
   });
+
+  /* ---------------- SERVICE WORKER FOR OFFLINE SUPPORT ---------------- */
+  if ('serviceWorker' in navigator) {
+    // Register service worker for full offline support
+    // This is a simple approach - the app already works offline with localStorage
+    // But service worker would cache the page itself for true offline access
+    console.log('Service Worker not registered - app works offline via localStorage');
+  }
 
   /* ---------------- INIT ---------------- */
   loadState();
