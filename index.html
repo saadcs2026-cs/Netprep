@@ -4,19 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
-  <!-- Primary Meta Tags -->
   <title>NET — Progress Tracker</title>
   <meta name="description" content="Track your NET preparation progress across 20 weeks">
   <meta name="theme-color" content="#ffffff">
   
-  <!-- Apple Touch Icon (iOS) - uses your net.png -->
   <link rel="apple-touch-icon" href="net.png">
-  
-  <!-- Web App Manifest with your net.png -->
   <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIk5FVCBQcm9ncmVzcyBUcmFja2VyIiwKICAic2hvcnRfbmFtZSI6ICJORVQgVHJhY2tlciIsCiAgImRlc2NyaXB0aW9uIjogIlRyYWNrIHlvdXIgTkVUIHByZXBhcmF0aW9uIHByb2dyZXNzIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmZmZmZmYiLAogICJ0aGVtZV9jb2xvciI6ICIjZmZmZmZmIiwKICAiaWNvbnMiOiBbCiAgICB7ICJzcmMiOiAibmV0LnBuZyIsICJzaXplcyI6ICIxOTJ4MTkyIiwgInR5cGUiOiAiaW1hZ2UvcG5nIiwgInB1cnBvc2UiOiAiYW55IG1hc2thYmxlIiB9LAogICAgeyAic3JjIjogIm5ldC5wbmciLCAic2l6ZXMiOiAiNTEyeDUxMiIsICJ0eXBlIjogImltYWdlL3BuZyIsICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIgfQogIF0KfQ==">
 
   <style>
-    /* ----- reset & variables ----- */
     * { 
       box-sizing: border-box; 
       margin: 0; 
@@ -31,7 +26,6 @@
       --line: #e7e7e7;
       --card: #fafafa;
       --accent: #2f6fed;
-      --good: #111111;
       --radius: 14px;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
       --timer-bg: #f0f4ff;
@@ -48,7 +42,6 @@
       touch-action: manipulation;
     }
 
-    /* ----- header & logo ----- */
     header {
       display: flex;
       align-items: center;
@@ -99,86 +92,64 @@
       font-weight: 500;
     }
 
-    /* ----- TIMER ----- */
-    .timer-bar {
+    /* Timer in header */
+    .header-timer {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       background: var(--timer-bg);
-      border-bottom: 1px solid var(--line);
-      padding: 8px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: sticky;
-      top: 60px;
-      z-index: 4;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-    
-    .timer-display {
-      font-size: 20px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: 1px;
-      color: var(--ink);
-      font-family: 'Courier New', monospace;
-      min-width: 120px;
-    }
-    
-    .timer-display.running {
-      color: var(--accent);
-    }
-    
-    .timer-controls {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    .timer-btn {
-      background: var(--ink);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
       padding: 4px 12px;
-      font-size: 11px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all .15s ease;
-      font-family: inherit;
-      min-height: 28px;
-      touch-action: manipulation;
-    }
-    
-    .timer-btn:active {
-      transform: scale(0.94);
-    }
-    
-    .timer-btn.secondary {
-      background: var(--card);
-      color: var(--ink);
+      border-radius: 20px;
       border: 1px solid var(--line);
     }
     
-    .timer-btn.reset {
+    .header-timer .time {
+      font-size: 14px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      font-family: 'Courier New', monospace;
+      min-width: 70px;
+    }
+    
+    .header-timer .time.running {
+      color: var(--accent);
+    }
+    
+    .header-timer .timer-controls-mini {
+      display: flex;
+      gap: 4px;
+    }
+    
+    .header-timer .timer-btn-mini {
+      background: none;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--ink-soft);
+      font-family: inherit;
+      transition: all .15s ease;
+      touch-action: manipulation;
+    }
+    
+    .header-timer .timer-btn-mini:active {
+      transform: scale(0.94);
+    }
+    
+    .header-timer .timer-btn-mini.start {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    
+    .header-timer .timer-btn-mini.reset {
       background: #ef4444;
       color: #fff;
-    }
-    
-    .timer-btn:disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-    
-    .timer-session-label {
-      font-size: 10px;
-      color: var(--ink-soft);
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
+      border-color: #ef4444;
     }
 
-    /* ----- main layout ----- */
     main { 
       max-width: 640px; 
       margin: 0 auto; 
@@ -188,7 +159,6 @@
     .view { display: none; }
     .view.active { display: block; }
 
-    /* cards */
     .card {
       background: var(--card);
       border: 1px solid var(--line);
@@ -255,7 +225,6 @@
       transition: width .4s ease; 
     }
 
-    /* tasks */
     .task {
       display: flex;
       align-items: center;
@@ -326,7 +295,6 @@
       text-decoration: line-through; 
     }
 
-    /* forms */
     input[type="date"], 
     input[type="number"], 
     input[type="text"], 
@@ -352,6 +320,11 @@
       border-color: var(--accent);
     }
     
+    input:disabled {
+      opacity: 0.6;
+      background: #f3f4f6;
+    }
+    
     textarea { 
       min-height: 140px; 
       resize: vertical; 
@@ -366,7 +339,6 @@
       letter-spacing: 0.3px;
     }
 
-    /* weeks */
     .week-header {
       display: flex; 
       justify-content: space-between; 
@@ -425,7 +397,7 @@
     .week-progress-dot.full { background: var(--ink); }
     .week-progress-dot.partial { background: var(--accent); }
 
-    /* attempts */
+    /* Attempts */
     .attempt-card { margin-bottom: 12px; }
     .attempt-top { 
       display: flex; 
@@ -436,14 +408,7 @@
       gap: 8px;
     }
     
-    .attempt-actions {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    
-    .attempt-badge {
+    .attempt-status {
       font-size: 10px; 
       padding: 3px 10px; 
       border-radius: 20px; 
@@ -452,30 +417,12 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      cursor: pointer;
-      transition: all .2s ease;
-      background: var(--card);
-      touch-action: manipulation;
     }
     
-    .attempt-badge:active {
-      transform: scale(0.94);
-    }
-    
-    .attempt-badge.done { 
+    .attempt-status.completed { 
       background: var(--ink); 
       color: #fff; 
       border-color: var(--ink); 
-    }
-    
-    .attempt-badge.locked {
-      background: #10b981;
-      color: #fff;
-      border-color: #10b981;
-    }
-    
-    .attempt-badge:not(.done):not(.locked):hover {
-      background: var(--line);
     }
     
     .attempt-fields { 
@@ -512,36 +459,41 @@
       font-weight: 700;
     }
     
-    .attempt-lock-btn {
-      background: none;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 10px;
-      font-weight: 600;
+    .attempt-complete-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 10px;
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 700;
       cursor: pointer;
-      color: var(--ink-soft);
       transition: all .2s ease;
       font-family: inherit;
       touch-action: manipulation;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
-    .attempt-lock-btn:active {
-      transform: scale(0.94);
+    .attempt-complete-btn:active {
+      transform: scale(0.97);
     }
     
-    .attempt-lock-btn.locked {
-      background: #10b981;
+    .attempt-complete-btn.completed {
+      background: var(--accent);
       color: #fff;
-      border-color: #10b981;
+      border-color: var(--accent);
+      cursor: default;
+      opacity: 0.8;
     }
     
-    .attempt-lock-btn:disabled {
+    .attempt-complete-btn:disabled {
       opacity: 0.5;
-      pointer-events: none;
+      cursor: not-allowed;
     }
 
-    /* subject breakdown */
     .subj-row { margin-bottom: 12px; }
     .subj-row:last-child { margin-bottom: 0; }
     .subj-top { 
@@ -575,7 +527,6 @@
       transition: width .4s ease;
     }
 
-    /* bottom nav */
     nav.bottom {
       position: fixed; 
       bottom: 0; 
@@ -637,13 +588,6 @@
       fill: none; 
     }
 
-    .empty-note { 
-      font-size: 13px; 
-      color: var(--ink-soft); 
-      text-align: center; 
-      padding: 20px 0; 
-    }
-    
     .save-hint { 
       font-size: 11px; 
       color: var(--ink-soft); 
@@ -652,7 +596,6 @@
       font-weight: 500;
     }
 
-    /* Offline indicator */
     .offline-banner {
       display: none;
       background: #fef3c7;
@@ -663,7 +606,7 @@
       font-weight: 600;
       border-bottom: 1px solid #f59e0b;
       position: sticky;
-      top: 108px;
+      top: 60px;
       z-index: 4;
     }
     
@@ -671,18 +614,118 @@
       display: block;
     }
 
-    /* Responsive fine-tuning */
+    /* FULL SCREEN TIMER VIEW */
+    .timer-full {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+    
+    .timer-full.active {
+      display: flex;
+    }
+    
+    .timer-full .big-time {
+      font-size: 80px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 4px;
+      color: var(--ink);
+    }
+    
+    .timer-full .big-time.running {
+      color: var(--accent);
+    }
+    
+    .timer-full .timer-label {
+      font-size: 14px;
+      color: var(--ink-soft);
+      margin-bottom: 30px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    .timer-full .controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .timer-full .controls button {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s ease;
+      touch-action: manipulation;
+      min-width: 100px;
+    }
+    
+    .timer-full .controls button:active {
+      transform: scale(0.95);
+    }
+    
+    .timer-full .controls .start-btn {
+      background: var(--accent);
+      color: #fff;
+    }
+    
+    .timer-full .controls .pause-btn {
+      background: var(--card);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    
+    .timer-full .controls .reset-btn {
+      background: #ef4444;
+      color: #fff;
+    }
+    
+    .timer-full .close-timer {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--ink-soft);
+      padding: 10px;
+      touch-action: manipulation;
+    }
+    
+    .timer-full .close-timer:active {
+      transform: scale(0.9);
+    }
+
     @media (max-width: 380px) {
       header { padding: 10px 12px; }
       .logo-sub { font-size: 10px; }
       .header-right { font-size: 10px; padding: 4px 10px; }
+      .header-timer .time { font-size: 12px; min-width: 60px; }
+      .header-timer .timer-btn-mini { font-size: 9px; padding: 2px 6px; }
       .stat .num { font-size: 20px; }
       .task-topic { font-size: 13px; }
       .card { padding: 14px; }
       .logo-img { height: 30px; }
-      .timer-display { font-size: 17px; min-width: 90px; }
-      .timer-bar { padding: 6px 12px; top: 56px; }
-      .offline-banner { top: 100px; }
+      .timer-full .big-time { font-size: 50px; }
+      .timer-full .controls button { padding: 10px 20px; font-size: 14px; min-width: 80px; }
     }
 
     @media (min-width: 768px) {
@@ -691,9 +734,9 @@
       nav.bottom { padding: 10px 16px; }
       nav.bottom button { font-size: 11px; }
       .stat .num { font-size: 28px; }
+      .timer-full .big-time { font-size: 120px; }
     }
 
-    /* Safe area support */
     @supports (padding: max(0px)) {
       body {
         padding-left: max(12px, env(safe-area-inset-left));
@@ -701,7 +744,6 @@
       }
     }
 
-    /* Dark mode support */
     @media (prefers-color-scheme: dark) {
       :root {
         --bg: #1a1a1a;
@@ -722,29 +764,31 @@
         border-color: #3a3a3a;
         color: #f5f5f5;
       }
+      input:disabled {
+        background: #2a2a2a;
+        opacity: 0.5;
+      }
       .checkbox { border-color: #f5f5f5; }
       .checkbox.checked { background: #f5f5f5; border-color: #f5f5f5; }
       .checkbox.checked svg { stroke: #1a1a1a; }
-      .attempt-badge.done { background: #f5f5f5; color: #1a1a1a; border-color: #f5f5f5; }
-      .attempt-badge.locked { background: #10b981; color: #fff; border-color: #10b981; }
+      .attempt-status.completed { background: #f5f5f5; color: #1a1a1a; border-color: #f5f5f5; }
       .progress-bar, .subj-bar { background: #2a2a2a; }
       .offline-banner {
         background: #2d2a00;
         color: #fbbf24;
         border-color: #78350f;
       }
-      .timer-btn.secondary {
+      .timer-full { background: #1a1a1a; }
+      .timer-full .controls .pause-btn {
         background: #2a2a2a;
         color: #f5f5f5;
         border-color: #3a3a3a;
       }
-      .timer-bar { border-bottom-color: #2a2a2a; }
     }
   </style>
 </head>
 <body>
 
-<!-- Offline Banner -->
 <div class="offline-banner" id="offlineBanner">📡 You're offline — changes will still be saved locally</div>
 
 <header>
@@ -752,21 +796,19 @@
     <img class="logo-img" src="net.png" alt="NET logo" onerror="this.style.display='none'">
     <span class="logo-sub">Progress Tracker</span>
   </div>
+  
+  <!-- Timer in Header -->
+  <div class="header-timer" id="headerTimer">
+    <span class="time" id="headerTimerDisplay">00:00:00</span>
+    <div class="timer-controls-mini">
+      <button class="timer-btn-mini start" id="headerTimerStart">▶</button>
+      <button class="timer-btn-mini" id="headerTimerPause">⏸</button>
+      <button class="timer-btn-mini reset" id="headerTimerReset">⟳</button>
+    </div>
+  </div>
+  
   <div class="header-right" id="headerCountdown">—</div>
 </header>
-
-<!-- TIMER BAR -->
-<div class="timer-bar" id="timerBar">
-  <div>
-    <div class="timer-session-label" id="timerSessionLabel">Study Session</div>
-    <div class="timer-display" id="timerDisplay">00:00:00</div>
-  </div>
-  <div class="timer-controls">
-    <button class="timer-btn" id="timerStartBtn">▶ Start</button>
-    <button class="timer-btn secondary" id="timerPauseBtn" disabled>⏸ Pause</button>
-    <button class="timer-btn reset" id="timerResetBtn">⟳ Reset</button>
-  </div>
-</div>
 
 <main>
   <!-- TODAY -->
@@ -817,7 +859,6 @@
     <div class="card">
       <h3>Attempt tracker (4 max)</h3>
       <p style="font-size:13px;color:var(--ink-soft);margin:0;font-weight:500;">Target score: 170 / 200</p>
-      <p style="font-size:12px;color:var(--ink-soft);margin-top:4px;">💡 Click status to toggle: Upcoming → Completed → Locked</p>
     </div>
     <div id="attemptsList"></div>
   </section>
@@ -831,6 +872,18 @@
     </div>
   </section>
 </main>
+
+<!-- FULL SCREEN TIMER -->
+<div class="timer-full" id="timerFull">
+  <button class="close-timer" id="closeTimer">✕</button>
+  <div class="timer-label">Study Session</div>
+  <div class="big-time" id="fullTimerDisplay">00:00:00</div>
+  <div class="controls">
+    <button class="start-btn" id="fullTimerStart">Start</button>
+    <button class="pause-btn" id="fullTimerPause">Pause</button>
+    <button class="reset-btn" id="fullTimerReset">Reset</button>
+  </div>
+</div>
 
 <nav class="bottom">
   <div class="nav-inner">
@@ -849,6 +902,10 @@
     <button class="nav-btn" data-view="notes" aria-label="Notes">
       <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h6"/></svg>
       Notes
+    </button>
+    <button class="nav-btn" data-view="timer" aria-label="Timer" id="timerNavBtn">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+      Timer
     </button>
   </div>
 </nav>
@@ -1024,16 +1081,15 @@
     startDate: null,
     examDate: null,
     attempts: [
-      {n:1, date:"", math:"", physics:"", english:"", total:"", done:false, locked:false},
-      {n:2, date:"", math:"", physics:"", english:"", total:"", done:false, locked:false},
-      {n:3, date:"", math:"", physics:"", english:"", total:"", done:false, locked:false},
-      {n:4, date:"", math:"", physics:"", english:"", total:"", done:false, locked:false}
+      {n:1, date:"", math:"", physics:"", english:"", total:"", completed:false},
+      {n:2, date:"", math:"", physics:"", english:"", total:"", completed:false},
+      {n:3, date:"", math:"", physics:"", english:"", total:"", completed:false},
+      {n:4, date:"", math:"", physics:"", english:"", total:"", completed:false}
     ],
     notes: "",
     timer: {
       running: false,
-      seconds: 0,
-      startTime: null
+      seconds: 0
     }
   };
 
@@ -1072,7 +1128,6 @@
 
   /* ---------------- TIMER ---------------- */
   let timerInterval = null;
-  let timerUpdateCallback = null;
 
   function formatTime(seconds) {
     const h = Math.floor(seconds / 3600);
@@ -1081,27 +1136,28 @@
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   }
 
-  function updateTimerDisplay() {
-    const display = document.getElementById('timerDisplay');
-    if (display) {
-      display.textContent = formatTime(state.timer.seconds);
-      if (state.timer.running) {
-        display.classList.add('running');
-      } else {
-        display.classList.remove('running');
+  function updateAllTimerDisplays() {
+    const displays = [
+      document.getElementById('headerTimerDisplay'),
+      document.getElementById('fullTimerDisplay')
+    ];
+    const timeStr = formatTime(state.timer.seconds);
+    displays.forEach(el => {
+      if (el) {
+        el.textContent = timeStr;
+        if (state.timer.running) {
+          el.classList.add('running');
+        } else {
+          el.classList.remove('running');
+        }
       }
-    }
-    // Update button states
-    const startBtn = document.getElementById('timerStartBtn');
-    const pauseBtn = document.getElementById('timerPauseBtn');
-    if (startBtn) startBtn.disabled = state.timer.running;
-    if (pauseBtn) pauseBtn.disabled = !state.timer.running;
+    });
   }
 
   function timerTick() {
     if (state.timer.running) {
       state.timer.seconds++;
-      updateTimerDisplay();
+      updateAllTimerDisplays();
       saveState();
     }
   }
@@ -1109,10 +1165,9 @@
   function startTimer() {
     if (state.timer.running) return;
     state.timer.running = true;
-    state.timer.startTime = Date.now();
     if (timerInterval) clearInterval(timerInterval);
     timerInterval = setInterval(timerTick, 1000);
-    updateTimerDisplay();
+    updateAllTimerDisplays();
     saveState();
   }
 
@@ -1123,24 +1178,53 @@
       clearInterval(timerInterval);
       timerInterval = null;
     }
-    updateTimerDisplay();
+    updateAllTimerDisplays();
     saveState();
   }
 
   function resetTimer() {
     pauseTimer();
     state.timer.seconds = 0;
-    state.timer.startTime = null;
-    updateTimerDisplay();
+    updateAllTimerDisplays();
     saveState();
   }
 
   // Timer event listeners
   document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('timerStartBtn').addEventListener('click', startTimer);
-    document.getElementById('timerPauseBtn').addEventListener('click', pauseTimer);
-    document.getElementById('timerResetBtn').addEventListener('click', resetTimer);
+    // Header controls
+    document.getElementById('headerTimerStart').addEventListener('click', startTimer);
+    document.getElementById('headerTimerPause').addEventListener('click', pauseTimer);
+    document.getElementById('headerTimerReset').addEventListener('click', resetTimer);
+    
+    // Full screen controls
+    document.getElementById('fullTimerStart').addEventListener('click', startTimer);
+    document.getElementById('fullTimerPause').addEventListener('click', pauseTimer);
+    document.getElementById('fullTimerReset').addEventListener('click', resetTimer);
+    
+    // Click on header timer to open full screen
+    document.getElementById('headerTimer').addEventListener('click', (e) => {
+      if (!e.target.closest('button')) {
+        openFullTimer();
+      }
+    });
+    
+    // Close full timer
+    document.getElementById('closeTimer').addEventListener('click', closeFullTimer);
+    
+    // Timer nav button
+    document.getElementById('timerNavBtn').addEventListener('click', () => {
+      openFullTimer();
+    });
   });
+
+  function openFullTimer() {
+    document.getElementById('timerFull').classList.add('active');
+    updateAllTimerDisplays();
+  }
+
+  function closeFullTimer() {
+    document.getElementById('timerFull').classList.remove('active');
+  }
 
   /* ---------------- LOAD & SAVE ---------------- */
   async function loadState(){
@@ -1149,9 +1233,9 @@
       if(res && res.value){
         const parsed = JSON.parse(res.value);
         state = Object.assign(state, parsed);
-        // Ensure attempts have locked property
+        // Ensure attempts have completed property
         state.attempts.forEach((a, i) => {
-          if (a.locked === undefined) a.locked = false;
+          if (a.completed === undefined) a.completed = false;
         });
       }
     }catch(e){ /* no saved state yet */ }
@@ -1159,9 +1243,8 @@
       state.startDate = new Date().toISOString().slice(0,10);
     }
     // Restore timer state
-    updateTimerDisplay();
+    updateAllTimerDisplays();
     if (state.timer.running) {
-      // Resume timer if it was running
       if (timerInterval) clearInterval(timerInterval);
       timerInterval = setInterval(timerTick, 1000);
     }
@@ -1261,7 +1344,7 @@
     renderToday();
     renderWeeks();
     renderAttempts();
-    updateTimerDisplay();
+    updateAllTimerDisplays();
   }
 
   function renderSubjectBreakdown(){
@@ -1375,36 +1458,30 @@
       card.className="card attempt-card";
       const total = (Number(a.math||0)+Number(a.physics||0)+Number(a.english||0)) || a.total || "";
       
-      // Determine status display
-      let statusText = 'Upcoming';
-      let statusClass = '';
-      if (a.locked) {
-        statusText = '🔒 Locked';
-        statusClass = 'locked';
-      } else if (a.done) {
-        statusText = '✅ Completed';
-        statusClass = 'done';
-      }
+      // Check if all fields are filled
+      const hasDate = a.date && a.date.trim() !== '';
+      const hasMath = a.math && a.math.trim() !== '';
+      const hasPhysics = a.physics && a.physics.trim() !== '';
+      const hasEnglish = a.english && a.english.trim() !== '';
+      const allFieldsFilled = hasDate && hasMath && hasPhysics && hasEnglish;
       
       card.innerHTML = `
         <div class="attempt-top">
           <span class="week-title">Attempt ${a.n}</span>
-          <div class="attempt-actions">
-            <span class="attempt-badge ${statusClass}" data-idx="${i}" data-action="toggle-status">${statusText}</span>
-            <button class="attempt-lock-btn ${a.locked?'locked':''}" data-idx="${i}" data-action="toggle-lock" ${a.locked ? 'disabled' : ''}>
-              ${a.locked ? '🔓 Unlock' : '🔒 Lock'}
-            </button>
-          </div>
+          <span class="attempt-status ${a.completed ? 'completed' : ''}">${a.completed ? 'Completed' : 'Upcoming'}</span>
         </div>
         <label class="field-label">Date</label>
-        <input type="date" data-idx="${i}" data-field="date" value="${a.date||''}" ${a.locked ? 'disabled' : ''}>
+        <input type="date" data-idx="${i}" data-field="date" value="${a.date||''}" ${a.completed ? 'disabled' : ''}>
         <div style="height:8px"></div>
         <div class="attempt-fields">
-          <div class="field-sm"><label>Math</label><input type="number" data-idx="${i}" data-field="math" value="${a.math||''}" placeholder="/100" ${a.locked ? 'disabled' : ''}></div>
-          <div class="field-sm"><label>Physics</label><input type="number" data-idx="${i}" data-field="physics" value="${a.physics||''}" placeholder="/60" ${a.locked ? 'disabled' : ''}></div>
-          <div class="field-sm"><label>English</label><input type="number" data-idx="${i}" data-field="english" value="${a.english||''}" placeholder="/40" ${a.locked ? 'disabled' : ''}></div>
+          <div class="field-sm"><label>Math</label><input type="number" data-idx="${i}" data-field="math" value="${a.math||''}" placeholder="/100" ${a.completed ? 'disabled' : ''}></div>
+          <div class="field-sm"><label>Physics</label><input type="number" data-idx="${i}" data-field="physics" value="${a.physics||''}" placeholder="/60" ${a.completed ? 'disabled' : ''}></div>
+          <div class="field-sm"><label>English</label><input type="number" data-idx="${i}" data-field="english" value="${a.english||''}" placeholder="/40" ${a.completed ? 'disabled' : ''}></div>
         </div>
         <div class="attempt-total">Total: <b>${a.total || total || 0}</b> / 200 &nbsp;·&nbsp; Target: 170</div>
+        <button class="attempt-complete-btn ${a.completed ? 'completed' : ''}" data-idx="${i}" ${a.completed ? 'disabled' : ''}>
+          ${a.completed ? '✓ Completed' : 'Complete Attempt'}
+        </button>
       `;
       list.appendChild(card);
     });
@@ -1421,29 +1498,25 @@
       return;
     }
     
-    // Attempt status toggle
-    const badge = e.target.closest('.attempt-badge');
-    if (badge && badge.dataset.action === 'toggle-status') {
-      const idx = parseInt(badge.dataset.idx);
+    // Complete attempt button
+    const completeBtn = e.target.closest('.attempt-complete-btn');
+    if (completeBtn && !completeBtn.classList.contains('completed')) {
+      const idx = parseInt(completeBtn.dataset.idx);
       const attempt = state.attempts[idx];
-      if (attempt.locked) return; // Can't change locked attempts
-      // Cycle: Upcoming → Completed → Upcoming
-      attempt.done = !attempt.done;
-      saveState();
-      renderAttempts();
-      return;
-    }
-    
-    // Lock toggle
-    const lockBtn = e.target.closest('.attempt-lock-btn');
-    if (lockBtn && lockBtn.dataset.action === 'toggle-lock') {
-      const idx = parseInt(lockBtn.dataset.idx);
-      const attempt = state.attempts[idx];
-      attempt.locked = !attempt.locked;
-      // Auto-complete when locking if not already done
-      if (attempt.locked && !attempt.done) {
-        attempt.done = true;
+      
+      // Check if all fields are filled
+      const hasDate = attempt.date && attempt.date.trim() !== '';
+      const hasMath = attempt.math && attempt.math.trim() !== '';
+      const hasPhysics = attempt.physics && attempt.physics.trim() !== '';
+      const hasEnglish = attempt.english && attempt.english.trim() !== '';
+      const allFieldsFilled = hasDate && hasMath && hasPhysics && hasEnglish;
+      
+      if (!allFieldsFilled) {
+        alert('Please fill in all fields (Date, Math, Physics, English) before completing.');
+        return;
       }
+      
+      attempt.completed = true;
       saveState();
       renderAttempts();
       return;
@@ -1455,7 +1528,12 @@
       document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
       document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
-      document.getElementById("view-"+btn.dataset.view).classList.add("active");
+      const viewId = "view-"+btn.dataset.view;
+      if (viewId === "view-timer") {
+        openFullTimer();
+        return;
+      }
+      document.getElementById(viewId).classList.add("active");
     });
   });
 
@@ -1486,7 +1564,7 @@
       const idx = Number(e.target.dataset.idx);
       const field = e.target.dataset.field;
       const attempt = state.attempts[idx];
-      if (attempt.locked) return; // Can't change locked attempts
+      if (attempt.completed) return;
       attempt[field] = e.target.value;
       if(field!=='date'){
         const t = Number(attempt.math||0)+Number(attempt.physics||0)+Number(attempt.english||0);
