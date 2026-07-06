@@ -34,6 +34,7 @@
       --good: #111111;
       --radius: 14px;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --timer-bg: #f0f4ff;
     }
     
     body {
@@ -61,6 +62,8 @@
       -webkit-backdrop-filter: blur(8px);
       z-index: 5;
       min-height: 60px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
     
     .logo {
@@ -69,7 +72,6 @@
       gap: 10px;
     }
     
-    /* ---------- your logo image (net.png) ---------- */
     .logo-img {
       height: 36px;
       width: auto;
@@ -95,6 +97,85 @@
       border-radius: 20px;
       white-space: nowrap;
       font-weight: 500;
+    }
+
+    /* ----- TIMER ----- */
+    .timer-bar {
+      background: var(--timer-bg);
+      border-bottom: 1px solid var(--line);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 60px;
+      z-index: 4;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .timer-display {
+      font-size: 20px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 1px;
+      color: var(--ink);
+      font-family: 'Courier New', monospace;
+      min-width: 120px;
+    }
+    
+    .timer-display.running {
+      color: var(--accent);
+    }
+    
+    .timer-controls {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .timer-btn {
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s ease;
+      font-family: inherit;
+      min-height: 28px;
+      touch-action: manipulation;
+    }
+    
+    .timer-btn:active {
+      transform: scale(0.94);
+    }
+    
+    .timer-btn.secondary {
+      background: var(--card);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    
+    .timer-btn.reset {
+      background: #ef4444;
+      color: #fff;
+    }
+    
+    .timer-btn:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    
+    .timer-session-label {
+      font-size: 10px;
+      color: var(--ink-soft);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
 
     /* ----- main layout ----- */
@@ -130,6 +211,7 @@
       align-items: center; 
       justify-content: space-between; 
       gap: 10px; 
+      flex-wrap: wrap;
     }
     
     .stat-grid { 
@@ -350,6 +432,15 @@
       justify-content: space-between; 
       align-items: center; 
       margin-bottom: 12px; 
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .attempt-actions {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      flex-wrap: wrap;
     }
     
     .attempt-badge {
@@ -361,12 +452,30 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: all .2s ease;
+      background: var(--card);
+      touch-action: manipulation;
+    }
+    
+    .attempt-badge:active {
+      transform: scale(0.94);
     }
     
     .attempt-badge.done { 
       background: var(--ink); 
       color: #fff; 
       border-color: var(--ink); 
+    }
+    
+    .attempt-badge.locked {
+      background: #10b981;
+      color: #fff;
+      border-color: #10b981;
+    }
+    
+    .attempt-badge:not(.done):not(.locked):hover {
+      background: var(--line);
     }
     
     .attempt-fields { 
@@ -401,6 +510,35 @@
     .attempt-total b { 
       color: var(--ink); 
       font-weight: 700;
+    }
+    
+    .attempt-lock-btn {
+      background: none;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--ink-soft);
+      transition: all .2s ease;
+      font-family: inherit;
+      touch-action: manipulation;
+    }
+    
+    .attempt-lock-btn:active {
+      transform: scale(0.94);
+    }
+    
+    .attempt-lock-btn.locked {
+      background: #10b981;
+      color: #fff;
+      border-color: #10b981;
+    }
+    
+    .attempt-lock-btn:disabled {
+      opacity: 0.5;
+      pointer-events: none;
     }
 
     /* subject breakdown */
@@ -513,29 +651,6 @@
       text-align: right; 
       font-weight: 500;
     }
-    
-    .btn {
-      background: var(--ink); 
-      color: #fff; 
-      border: none; 
-      border-radius: 8px;
-      padding: 10px 16px; 
-      font-size: 14px; 
-      font-family: inherit; 
-      cursor: pointer;
-      font-weight: 600;
-      transition: opacity .2s ease;
-    }
-    
-    .btn:active {
-      opacity: 0.8;
-    }
-    
-    .btn.secondary { 
-      background: none; 
-      color: var(--ink); 
-      border: 1px solid var(--line); 
-    }
 
     /* Offline indicator */
     .offline-banner {
@@ -548,7 +663,7 @@
       font-weight: 600;
       border-bottom: 1px solid #f59e0b;
       position: sticky;
-      top: 60px;
+      top: 108px;
       z-index: 4;
     }
     
@@ -565,6 +680,9 @@
       .task-topic { font-size: 13px; }
       .card { padding: 14px; }
       .logo-img { height: 30px; }
+      .timer-display { font-size: 17px; min-width: 90px; }
+      .timer-bar { padding: 6px 12px; top: 56px; }
+      .offline-banner { top: 100px; }
     }
 
     @media (min-width: 768px) {
@@ -592,6 +710,7 @@
         --line: #2a2a2a;
         --card: #222222;
         --accent: #4a8af4;
+        --timer-bg: #1a2233;
       }
       header { background: #1a1a1aee; }
       nav.bottom { background: #1a1a1aee; }
@@ -607,12 +726,19 @@
       .checkbox.checked { background: #f5f5f5; border-color: #f5f5f5; }
       .checkbox.checked svg { stroke: #1a1a1a; }
       .attempt-badge.done { background: #f5f5f5; color: #1a1a1a; border-color: #f5f5f5; }
+      .attempt-badge.locked { background: #10b981; color: #fff; border-color: #10b981; }
       .progress-bar, .subj-bar { background: #2a2a2a; }
       .offline-banner {
         background: #2d2a00;
         color: #fbbf24;
         border-color: #78350f;
       }
+      .timer-btn.secondary {
+        background: #2a2a2a;
+        color: #f5f5f5;
+        border-color: #3a3a3a;
+      }
+      .timer-bar { border-bottom-color: #2a2a2a; }
     }
   </style>
 </head>
@@ -623,12 +749,24 @@
 
 <header>
   <div class="logo">
-    <!-- ========== YOUR LOGO IMAGE (net.png) ========== -->
     <img class="logo-img" src="net.png" alt="NET logo" onerror="this.style.display='none'">
     <span class="logo-sub">Progress Tracker</span>
   </div>
   <div class="header-right" id="headerCountdown">—</div>
 </header>
+
+<!-- TIMER BAR -->
+<div class="timer-bar" id="timerBar">
+  <div>
+    <div class="timer-session-label" id="timerSessionLabel">Study Session</div>
+    <div class="timer-display" id="timerDisplay">00:00:00</div>
+  </div>
+  <div class="timer-controls">
+    <button class="timer-btn" id="timerStartBtn">▶ Start</button>
+    <button class="timer-btn secondary" id="timerPauseBtn" disabled>⏸ Pause</button>
+    <button class="timer-btn reset" id="timerResetBtn">⟳ Reset</button>
+  </div>
+</div>
 
 <main>
   <!-- TODAY -->
@@ -679,6 +817,7 @@
     <div class="card">
       <h3>Attempt tracker (4 max)</h3>
       <p style="font-size:13px;color:var(--ink-soft);margin:0;font-weight:500;">Target score: 170 / 200</p>
+      <p style="font-size:12px;color:var(--ink-soft);margin-top:4px;">💡 Click status to toggle: Upcoming → Completed → Locked</p>
     </div>
     <div id="attemptsList"></div>
   </section>
@@ -885,17 +1024,22 @@
     startDate: null,
     examDate: null,
     attempts: [
-      {n:1, date:"", math:"", physics:"", english:"", total:"", done:false},
-      {n:2, date:"", math:"", physics:"", english:"", total:"", done:false},
-      {n:3, date:"", math:"", physics:"", english:"", total:"", done:false},
-      {n:4, date:"", math:"", physics:"", english:"", total:"", done:false}
+      {n:1, date:"", math:"", physics:"", english:"", total:"", done:false, locked:false},
+      {n:2, date:"", math:"", physics:"", english:"", total:"", done:false, locked:false},
+      {n:3, date:"", math:"", physics:"", english:"", total:"", done:false, locked:false},
+      {n:4, date:"", math:"", physics:"", english:"", total:"", done:false, locked:false}
     ],
-    notes: ""
+    notes: "",
+    timer: {
+      running: false,
+      seconds: 0,
+      startTime: null
+    }
   };
 
   const STORAGE_KEY = "net_tracker_state_v1";
 
-  /* ---------------- OFFLINE STORAGE (localStorage only) ---------------- */
+  /* ---------------- OFFLINE STORAGE ---------------- */
   function storageGet(key){
     try{
       const v = localStorage.getItem(key);
@@ -926,6 +1070,78 @@
   window.addEventListener('online', updateOfflineStatus);
   window.addEventListener('offline', updateOfflineStatus);
 
+  /* ---------------- TIMER ---------------- */
+  let timerInterval = null;
+  let timerUpdateCallback = null;
+
+  function formatTime(seconds) {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+  }
+
+  function updateTimerDisplay() {
+    const display = document.getElementById('timerDisplay');
+    if (display) {
+      display.textContent = formatTime(state.timer.seconds);
+      if (state.timer.running) {
+        display.classList.add('running');
+      } else {
+        display.classList.remove('running');
+      }
+    }
+    // Update button states
+    const startBtn = document.getElementById('timerStartBtn');
+    const pauseBtn = document.getElementById('timerPauseBtn');
+    if (startBtn) startBtn.disabled = state.timer.running;
+    if (pauseBtn) pauseBtn.disabled = !state.timer.running;
+  }
+
+  function timerTick() {
+    if (state.timer.running) {
+      state.timer.seconds++;
+      updateTimerDisplay();
+      saveState();
+    }
+  }
+
+  function startTimer() {
+    if (state.timer.running) return;
+    state.timer.running = true;
+    state.timer.startTime = Date.now();
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(timerTick, 1000);
+    updateTimerDisplay();
+    saveState();
+  }
+
+  function pauseTimer() {
+    if (!state.timer.running) return;
+    state.timer.running = false;
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+    updateTimerDisplay();
+    saveState();
+  }
+
+  function resetTimer() {
+    pauseTimer();
+    state.timer.seconds = 0;
+    state.timer.startTime = null;
+    updateTimerDisplay();
+    saveState();
+  }
+
+  // Timer event listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('timerStartBtn').addEventListener('click', startTimer);
+    document.getElementById('timerPauseBtn').addEventListener('click', pauseTimer);
+    document.getElementById('timerResetBtn').addEventListener('click', resetTimer);
+  });
+
   /* ---------------- LOAD & SAVE ---------------- */
   async function loadState(){
     try{
@@ -933,10 +1149,21 @@
       if(res && res.value){
         const parsed = JSON.parse(res.value);
         state = Object.assign(state, parsed);
+        // Ensure attempts have locked property
+        state.attempts.forEach((a, i) => {
+          if (a.locked === undefined) a.locked = false;
+        });
       }
     }catch(e){ /* no saved state yet */ }
     if(!state.startDate){
       state.startDate = new Date().toISOString().slice(0,10);
+    }
+    // Restore timer state
+    updateTimerDisplay();
+    if (state.timer.running) {
+      // Resume timer if it was running
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = setInterval(timerTick, 1000);
     }
     render();
     updateOfflineStatus();
@@ -945,9 +1172,8 @@
   async function saveState(){
     try{
       const saved = storageSet(STORAGE_KEY, JSON.stringify(state));
-      // Show instant feedback
       const hint = document.getElementById('notesSaveHint');
-      if (hint) {
+      if (hint && hint.textContent !== 'Saving…') {
         hint.textContent = saved ? '✓ Saved locally' : '⚠️ Save failed';
         setTimeout(() => {
           if (hint.textContent === '✓ Saved locally' || hint.textContent === '⚠️ Save failed') {
@@ -1035,6 +1261,7 @@
     renderToday();
     renderWeeks();
     renderAttempts();
+    updateTimerDisplay();
   }
 
   function renderSubjectBreakdown(){
@@ -1147,18 +1374,35 @@
       const card = document.createElement("div");
       card.className="card attempt-card";
       const total = (Number(a.math||0)+Number(a.physics||0)+Number(a.english||0)) || a.total || "";
+      
+      // Determine status display
+      let statusText = 'Upcoming';
+      let statusClass = '';
+      if (a.locked) {
+        statusText = '🔒 Locked';
+        statusClass = 'locked';
+      } else if (a.done) {
+        statusText = '✅ Completed';
+        statusClass = 'done';
+      }
+      
       card.innerHTML = `
         <div class="attempt-top">
           <span class="week-title">Attempt ${a.n}</span>
-          <span class="attempt-badge ${a.done?'done':''}">${a.done?'Completed':'Upcoming'}</span>
+          <div class="attempt-actions">
+            <span class="attempt-badge ${statusClass}" data-idx="${i}" data-action="toggle-status">${statusText}</span>
+            <button class="attempt-lock-btn ${a.locked?'locked':''}" data-idx="${i}" data-action="toggle-lock" ${a.locked ? 'disabled' : ''}>
+              ${a.locked ? '🔓 Unlock' : '🔒 Lock'}
+            </button>
+          </div>
         </div>
         <label class="field-label">Date</label>
-        <input type="date" data-idx="${i}" data-field="date" value="${a.date||''}">
+        <input type="date" data-idx="${i}" data-field="date" value="${a.date||''}" ${a.locked ? 'disabled' : ''}>
         <div style="height:8px"></div>
         <div class="attempt-fields">
-          <div class="field-sm"><label>Math</label><input type="number" data-idx="${i}" data-field="math" value="${a.math||''}" placeholder="/100"></div>
-          <div class="field-sm"><label>Physics</label><input type="number" data-idx="${i}" data-field="physics" value="${a.physics||''}" placeholder="/60"></div>
-          <div class="field-sm"><label>English</label><input type="number" data-idx="${i}" data-field="english" value="${a.english||''}" placeholder="/40"></div>
+          <div class="field-sm"><label>Math</label><input type="number" data-idx="${i}" data-field="math" value="${a.math||''}" placeholder="/100" ${a.locked ? 'disabled' : ''}></div>
+          <div class="field-sm"><label>Physics</label><input type="number" data-idx="${i}" data-field="physics" value="${a.physics||''}" placeholder="/60" ${a.locked ? 'disabled' : ''}></div>
+          <div class="field-sm"><label>English</label><input type="number" data-idx="${i}" data-field="english" value="${a.english||''}" placeholder="/40" ${a.locked ? 'disabled' : ''}></div>
         </div>
         <div class="attempt-total">Total: <b>${a.total || total || 0}</b> / 200 &nbsp;·&nbsp; Target: 170</div>
       `;
@@ -1174,6 +1418,34 @@
       state.checklist[k] = !state.checklist[k];
       saveState();
       render();
+      return;
+    }
+    
+    // Attempt status toggle
+    const badge = e.target.closest('.attempt-badge');
+    if (badge && badge.dataset.action === 'toggle-status') {
+      const idx = parseInt(badge.dataset.idx);
+      const attempt = state.attempts[idx];
+      if (attempt.locked) return; // Can't change locked attempts
+      // Cycle: Upcoming → Completed → Upcoming
+      attempt.done = !attempt.done;
+      saveState();
+      renderAttempts();
+      return;
+    }
+    
+    // Lock toggle
+    const lockBtn = e.target.closest('.attempt-lock-btn');
+    if (lockBtn && lockBtn.dataset.action === 'toggle-lock') {
+      const idx = parseInt(lockBtn.dataset.idx);
+      const attempt = state.attempts[idx];
+      attempt.locked = !attempt.locked;
+      // Auto-complete when locking if not already done
+      if (attempt.locked && !attempt.done) {
+        attempt.done = true;
+      }
+      saveState();
+      renderAttempts();
       return;
     }
   });
@@ -1213,24 +1485,17 @@
     if(e.target.matches('[data-field]')){
       const idx = Number(e.target.dataset.idx);
       const field = e.target.dataset.field;
-      state.attempts[idx][field] = e.target.value;
+      const attempt = state.attempts[idx];
+      if (attempt.locked) return; // Can't change locked attempts
+      attempt[field] = e.target.value;
       if(field!=='date'){
-        const a = state.attempts[idx];
-        const t = Number(a.math||0)+Number(a.physics||0)+Number(a.english||0);
-        if(t>0) a.total = t;
+        const t = Number(attempt.math||0)+Number(attempt.physics||0)+Number(attempt.english||0);
+        if(t>0) attempt.total = t;
       }
       saveState();
       renderAttempts();
     }
   });
-
-  /* ---------------- SERVICE WORKER FOR OFFLINE SUPPORT ---------------- */
-  if ('serviceWorker' in navigator) {
-    // Register service worker for full offline support
-    // This is a simple approach - the app already works offline with localStorage
-    // But service worker would cache the page itself for true offline access
-    console.log('Service Worker not registered - app works offline via localStorage');
-  }
 
   /* ---------------- INIT ---------------- */
   loadState();
