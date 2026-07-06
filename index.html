@@ -96,19 +96,20 @@
     .header-timer {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: var(--timer-bg);
-      padding: 4px 12px;
+      padding: 4px 10px;
       border-radius: 20px;
       border: 1px solid var(--line);
+      cursor: pointer;
     }
     
     .header-timer .time {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
       font-variant-numeric: tabular-nums;
       font-family: 'Courier New', monospace;
-      min-width: 70px;
+      min-width: 65px;
     }
     
     .header-timer .time.running {
@@ -117,14 +118,14 @@
     
     .header-timer .timer-controls-mini {
       display: flex;
-      gap: 4px;
+      gap: 3px;
     }
     
     .header-timer .timer-btn-mini {
       background: none;
       border: 1px solid var(--line);
       border-radius: 4px;
-      padding: 2px 8px;
+      padding: 2px 7px;
       font-size: 10px;
       font-weight: 600;
       cursor: pointer;
@@ -527,6 +528,116 @@
       transition: width .4s ease;
     }
 
+    /* TIMER SECTION */
+    .timer-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 70vh;
+      padding: 20px 16px;
+    }
+    
+    .timer-section .big-time {
+      font-size: 72px;
+      font-weight: 700;
+      font-variant-numeric: tabular-nums;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 4px;
+      color: var(--ink);
+      margin: 20px 0;
+    }
+    
+    .timer-section .big-time.running {
+      color: var(--accent);
+    }
+    
+    .timer-section .timer-label {
+      font-size: 14px;
+      color: var(--ink-soft);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    
+    .timer-section .controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .timer-section .controls button {
+      padding: 12px 32px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .2s ease;
+      touch-action: manipulation;
+      min-width: 100px;
+    }
+    
+    .timer-section .controls button:active {
+      transform: scale(0.95);
+    }
+    
+    .timer-section .controls .start-btn {
+      background: var(--accent);
+      color: #fff;
+    }
+    
+    .timer-section .controls .pause-btn {
+      background: var(--card);
+      color: var(--ink);
+      border: 1px solid var(--line);
+    }
+    
+    .timer-section .controls .reset-btn {
+      background: #ef4444;
+      color: #fff;
+    }
+    
+    .timer-section .controls button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Stats in timer section */
+    .timer-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      max-width: 400px;
+      margin-top: 30px;
+    }
+    
+    .timer-stats .stat-item {
+      text-align: center;
+      padding: 12px;
+      background: var(--card);
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+    }
+    
+    .timer-stats .stat-item .num {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    
+    .timer-stats .stat-item .label {
+      font-size: 10px;
+      color: var(--ink-soft);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
     nav.bottom {
       position: fixed; 
       bottom: 0; 
@@ -614,118 +725,19 @@
       display: block;
     }
 
-    /* FULL SCREEN TIMER VIEW */
-    .timer-full {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--bg);
-      z-index: 100;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 40px;
-    }
-    
-    .timer-full.active {
-      display: flex;
-    }
-    
-    .timer-full .big-time {
-      font-size: 80px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      font-family: 'Courier New', monospace;
-      letter-spacing: 4px;
-      color: var(--ink);
-    }
-    
-    .timer-full .big-time.running {
-      color: var(--accent);
-    }
-    
-    .timer-full .timer-label {
-      font-size: 14px;
-      color: var(--ink-soft);
-      margin-bottom: 30px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    
-    .timer-full .controls {
-      display: flex;
-      gap: 12px;
-      margin-top: 30px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    
-    .timer-full .controls button {
-      padding: 12px 30px;
-      border: none;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: inherit;
-      transition: all .2s ease;
-      touch-action: manipulation;
-      min-width: 100px;
-    }
-    
-    .timer-full .controls button:active {
-      transform: scale(0.95);
-    }
-    
-    .timer-full .controls .start-btn {
-      background: var(--accent);
-      color: #fff;
-    }
-    
-    .timer-full .controls .pause-btn {
-      background: var(--card);
-      color: var(--ink);
-      border: 1px solid var(--line);
-    }
-    
-    .timer-full .controls .reset-btn {
-      background: #ef4444;
-      color: #fff;
-    }
-    
-    .timer-full .close-timer {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      background: none;
-      border: none;
-      font-size: 24px;
-      cursor: pointer;
-      color: var(--ink-soft);
-      padding: 10px;
-      touch-action: manipulation;
-    }
-    
-    .timer-full .close-timer:active {
-      transform: scale(0.9);
-    }
-
     @media (max-width: 380px) {
       header { padding: 10px 12px; }
       .logo-sub { font-size: 10px; }
       .header-right { font-size: 10px; padding: 4px 10px; }
-      .header-timer .time { font-size: 12px; min-width: 60px; }
-      .header-timer .timer-btn-mini { font-size: 9px; padding: 2px 6px; }
+      .header-timer .time { font-size: 11px; min-width: 55px; }
+      .header-timer .timer-btn-mini { font-size: 9px; padding: 2px 5px; }
       .stat .num { font-size: 20px; }
       .task-topic { font-size: 13px; }
       .card { padding: 14px; }
       .logo-img { height: 30px; }
-      .timer-full .big-time { font-size: 50px; }
-      .timer-full .controls button { padding: 10px 20px; font-size: 14px; min-width: 80px; }
+      .timer-section .big-time { font-size: 48px; }
+      .timer-section .controls button { padding: 10px 20px; font-size: 14px; min-width: 80px; }
+      .timer-stats .stat-item .num { font-size: 16px; }
     }
 
     @media (min-width: 768px) {
@@ -734,7 +746,7 @@
       nav.bottom { padding: 10px 16px; }
       nav.bottom button { font-size: 11px; }
       .stat .num { font-size: 28px; }
-      .timer-full .big-time { font-size: 120px; }
+      .timer-section .big-time { font-size: 96px; }
     }
 
     @supports (padding: max(0px)) {
@@ -778,12 +790,12 @@
         color: #fbbf24;
         border-color: #78350f;
       }
-      .timer-full { background: #1a1a1a; }
-      .timer-full .controls .pause-btn {
+      .timer-section .controls .pause-btn {
         background: #2a2a2a;
         color: #f5f5f5;
         border-color: #3a3a3a;
       }
+      .timer-stats .stat-item { background: #2a2a2a; border-color: #3a3a3a; }
     }
   </style>
 </head>
@@ -871,19 +883,35 @@
       <div class="save-hint" id="notesSaveHint">✓ Saved locally</div>
     </div>
   </section>
-</main>
 
-<!-- FULL SCREEN TIMER -->
-<div class="timer-full" id="timerFull">
-  <button class="close-timer" id="closeTimer">✕</button>
-  <div class="timer-label">Study Session</div>
-  <div class="big-time" id="fullTimerDisplay">00:00:00</div>
-  <div class="controls">
-    <button class="start-btn" id="fullTimerStart">Start</button>
-    <button class="pause-btn" id="fullTimerPause">Pause</button>
-    <button class="reset-btn" id="fullTimerReset">Reset</button>
-  </div>
-</div>
+  <!-- TIMER SECTION -->
+  <section class="view" id="view-timer">
+    <div class="timer-section">
+      <div class="timer-label">Study Session</div>
+      <div class="big-time" id="fullTimerDisplay">00:00:00</div>
+      <div class="controls">
+        <button class="start-btn" id="fullTimerStart">Start</button>
+        <button class="pause-btn" id="fullTimerPause">Pause</button>
+        <button class="reset-btn" id="fullTimerReset">Reset</button>
+      </div>
+      
+      <div class="timer-stats">
+        <div class="stat-item">
+          <div class="num" id="timerTotalSessions">0</div>
+          <div class="label">Sessions</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="timerTotalMinutes">0</div>
+          <div class="label">Minutes</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="timerTodayMinutes">0</div>
+          <div class="label">Today</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
 
 <nav class="bottom">
   <div class="nav-inner">
@@ -903,7 +931,7 @@
       <svg viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M8 9h8M8 13h6"/></svg>
       Notes
     </button>
-    <button class="nav-btn" data-view="timer" aria-label="Timer" id="timerNavBtn">
+    <button class="nav-btn" data-view="timer" aria-label="Timer">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
       Timer
     </button>
@@ -1089,7 +1117,11 @@
     notes: "",
     timer: {
       running: false,
-      seconds: 0
+      seconds: 0,
+      totalSessions: 0,
+      totalMinutes: 0,
+      todayMinutes: 0,
+      lastDate: null
     }
   };
 
@@ -1152,6 +1184,11 @@
         }
       }
     });
+    
+    // Update stats
+    document.getElementById('timerTotalSessions').textContent = state.timer.totalSessions || 0;
+    document.getElementById('timerTotalMinutes').textContent = state.timer.totalMinutes || 0;
+    document.getElementById('timerTodayMinutes').textContent = state.timer.todayMinutes || 0;
   }
 
   function timerTick() {
@@ -1178,6 +1215,20 @@
       clearInterval(timerInterval);
       timerInterval = null;
     }
+    // Update stats when pausing
+    const today = new Date().toDateString();
+    const minutes = Math.floor(state.timer.seconds / 60);
+    if (minutes > 0) {
+      state.timer.totalMinutes = (state.timer.totalMinutes || 0) + minutes;
+      if (state.timer.lastDate !== today) {
+        state.timer.todayMinutes = minutes;
+        state.timer.lastDate = today;
+      } else {
+        state.timer.todayMinutes = (state.timer.todayMinutes || 0) + minutes;
+      }
+      state.timer.totalSessions = (state.timer.totalSessions || 0) + 1;
+      state.timer.seconds = 0;
+    }
     updateAllTimerDisplays();
     saveState();
   }
@@ -1200,31 +1251,7 @@
     document.getElementById('fullTimerStart').addEventListener('click', startTimer);
     document.getElementById('fullTimerPause').addEventListener('click', pauseTimer);
     document.getElementById('fullTimerReset').addEventListener('click', resetTimer);
-    
-    // Click on header timer to open full screen
-    document.getElementById('headerTimer').addEventListener('click', (e) => {
-      if (!e.target.closest('button')) {
-        openFullTimer();
-      }
-    });
-    
-    // Close full timer
-    document.getElementById('closeTimer').addEventListener('click', closeFullTimer);
-    
-    // Timer nav button
-    document.getElementById('timerNavBtn').addEventListener('click', () => {
-      openFullTimer();
-    });
   });
-
-  function openFullTimer() {
-    document.getElementById('timerFull').classList.add('active');
-    updateAllTimerDisplays();
-  }
-
-  function closeFullTimer() {
-    document.getElementById('timerFull').classList.remove('active');
-  }
 
   /* ---------------- LOAD & SAVE ---------------- */
   async function loadState(){
@@ -1237,6 +1264,10 @@
         state.attempts.forEach((a, i) => {
           if (a.completed === undefined) a.completed = false;
         });
+        // Ensure timer stats exist
+        if (!state.timer.totalSessions) state.timer.totalSessions = 0;
+        if (!state.timer.totalMinutes) state.timer.totalMinutes = 0;
+        if (!state.timer.todayMinutes) state.timer.todayMinutes = 0;
       }
     }catch(e){ /* no saved state yet */ }
     if(!state.startDate){
@@ -1458,13 +1489,6 @@
       card.className="card attempt-card";
       const total = (Number(a.math||0)+Number(a.physics||0)+Number(a.english||0)) || a.total || "";
       
-      // Check if all fields are filled
-      const hasDate = a.date && a.date.trim() !== '';
-      const hasMath = a.math && a.math.trim() !== '';
-      const hasPhysics = a.physics && a.physics.trim() !== '';
-      const hasEnglish = a.english && a.english.trim() !== '';
-      const allFieldsFilled = hasDate && hasMath && hasPhysics && hasEnglish;
-      
       card.innerHTML = `
         <div class="attempt-top">
           <span class="week-title">Attempt ${a.n}</span>
@@ -1480,7 +1504,7 @@
         </div>
         <div class="attempt-total">Total: <b>${a.total || total || 0}</b> / 200 &nbsp;·&nbsp; Target: 170</div>
         <button class="attempt-complete-btn ${a.completed ? 'completed' : ''}" data-idx="${i}" ${a.completed ? 'disabled' : ''}>
-          ${a.completed ? '✓ Completed' : 'Complete Attempt'}
+          ${a.completed ? 'Completed' : 'Complete Attempt'}
         </button>
       `;
       list.appendChild(card);
@@ -1498,13 +1522,11 @@
       return;
     }
     
-    // Complete attempt button
     const completeBtn = e.target.closest('.attempt-complete-btn');
     if (completeBtn && !completeBtn.classList.contains('completed')) {
       const idx = parseInt(completeBtn.dataset.idx);
       const attempt = state.attempts[idx];
       
-      // Check if all fields are filled
       const hasDate = attempt.date && attempt.date.trim() !== '';
       const hasMath = attempt.math && attempt.math.trim() !== '';
       const hasPhysics = attempt.physics && attempt.physics.trim() !== '';
@@ -1528,12 +1550,7 @@
       document.querySelectorAll(".nav-btn").forEach(b=>b.classList.remove("active"));
       btn.classList.add("active");
       document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
-      const viewId = "view-"+btn.dataset.view;
-      if (viewId === "view-timer") {
-        openFullTimer();
-        return;
-      }
-      document.getElementById(viewId).classList.add("active");
+      document.getElementById("view-"+btn.dataset.view).classList.add("active");
     });
   });
 
